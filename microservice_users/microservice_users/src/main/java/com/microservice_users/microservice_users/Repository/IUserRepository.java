@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-@Repository //Clase que permite hacer querys a una base de datos
+@Repository
 
 public interface IUserRepository extends JpaRepository<User, Integer> {
     Optional<User> findByCode(String code);

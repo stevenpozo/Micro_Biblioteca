@@ -1,12 +1,11 @@
-package com.microservice_users.microservice_users.Entities;
+package com.microservice_users.microservice_users.Models;
 
 import java.util.Date;
-import java.util.List;
 
 public class LoanRequest {
     private int userId;
-    private Long bookId;  // Ahora solo recibes un libro
-    private Date dateOfDevolution; // Fecha de devolución enviada en el cuerpo
+    private Long bookId;
+    private Date dateOfDevolution;
 
     public int getUserId() {
         return userId;

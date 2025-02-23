@@ -53,6 +53,26 @@ public class BookController {
         return new ResponseEntity<>(booksData, HttpStatus.OK);
     }
 
+    // GET ACTIVE DATA OF BOOKS
+    @GetMapping("/active")
+    public ResponseEntity<List<Map<String, Object>>> getBookActiveData() {
+        List<Map<String, Object>> booksData = bookService.getBookActiveData();
+        if (booksData.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(booksData, HttpStatus.OK);
+    }
+
+    // GET SOME DATA OF BOOKS TITLE, AUTHOR AND CODE
+    @GetMapping("/tac")
+    public ResponseEntity<List<Map<String, Object>>> getBookTac() {
+        List<Map<String, Object>> booksData = bookService.getBookTac();
+        if (booksData.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(booksData, HttpStatus.OK);
+    }
+
     // CREATE NEW BOOK
     @PostMapping("/create")
     public ResponseEntity<?> createBook(@Valid @RequestBody Book book, BindingResult result) {
@@ -94,6 +114,17 @@ public class BookController {
         }
     }
 
+    // ENABLE BOOK
+    @PutMapping("/enable/{id}")
+    public ResponseEntity<?> enableBook(@PathVariable Integer id) {
+        try {
+            Book book = bookService.enableBook(id);
+            return new ResponseEntity<>(book, HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
     // GET TOTAL AMOUNT OF BOOKS
     @GetMapping("/total-amount")
     public ResponseEntity<BigDecimal> getTotalAmount() {
@@ -104,4 +135,16 @@ public class BookController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    // VERIFY IF BOOK STATUS IS ACTIVE
+    @GetMapping("/verify-status/{id}")
+    public ResponseEntity<Boolean> verifyBookStatus(@PathVariable Integer id) {
+        try {
+            boolean isActive = bookService.verifyBookStatus(id);
+            return new ResponseEntity<>(isActive, HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(false); // En caso de error o libro no encontrado
+        }
+    }
+
 }

@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @SpringBootApplication
-@EnableFeignClients  // Asegúrate de que Feign esté habilitado
+@EnableFeignClients
 
 public class MicroserviceUsersApplication {
 
