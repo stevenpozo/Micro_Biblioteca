@@ -1,6 +1,7 @@
 package com.microservice_users.microservice_users.Controller;
 
 import com.microservice_users.microservice_users.Entities.Loan;
+import com.microservice_users.microservice_users.Models.BinnacleDTO;
 import com.microservice_users.microservice_users.Models.LoanRequest;
 import com.microservice_users.microservice_users.Models.LoanUserBookDTO;
 import com.microservice_users.microservice_users.Service.LoanService;
@@ -53,11 +54,11 @@ public class LoanController {
     }
 
 
-    // GET ALL LOAN
-    @GetMapping
+    // GET SOME DATA LOAN
+    @GetMapping("/some-data")
     public ResponseEntity<List<LoanUserBookDTO>> getAllLoans() {
         try {
-            List<LoanUserBookDTO> loans = loanService.getAllLoans();
+            List<LoanUserBookDTO> loans = loanService.getAllLoanUserBook();
 
             if (loans.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -67,6 +68,18 @@ public class LoanController {
         } catch (RuntimeException e) {
             return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    //GET BINNACLE
+    @GetMapping("/binnacle")
+    public ResponseEntity<List<BinnacleDTO>> getAllBinacleEntries() {
+        List<BinnacleDTO> entries = loanService.getAllBinnacleData();
+
+        if (entries.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(entries);
     }
 
 

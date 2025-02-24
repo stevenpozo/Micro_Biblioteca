@@ -12,7 +12,6 @@ public class LoanUserBookDTO {
     private String user_last_name;
     private String codeBook;
     private String title;
-    private String author;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date acquisition_date;
@@ -66,14 +65,6 @@ public class LoanUserBookDTO {
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    public String getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(String author) {
-        this.author = author;
     }
 
     public Date getAcquisition_date() {

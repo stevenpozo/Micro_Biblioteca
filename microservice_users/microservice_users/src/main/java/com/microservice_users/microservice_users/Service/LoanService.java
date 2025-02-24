@@ -4,6 +4,7 @@ import com.microservice_users.microservice_users.Client.BookFeignClient;
 import com.microservice_users.microservice_users.Entities.Loan;
 import com.microservice_users.microservice_users.Entities.LoanBook;
 import com.microservice_users.microservice_users.Entities.User;
+import com.microservice_users.microservice_users.Models.BinnacleDTO;
 import com.microservice_users.microservice_users.Models.Book;
 import com.microservice_users.microservice_users.Models.LoanUserBookDTO;
 import com.microservice_users.microservice_users.Repository.ILoanRepository;
@@ -93,14 +94,13 @@ public class LoanService {
 
             loanUserBookDTO.setCodeBook(book.getCode());
             loanUserBookDTO.setTitle(book.getTitle());
-            loanUserBookDTO.setAuthor(book.getAuthor());
         }
 
         return loanUserBookDTO;
     }
 
-    //GET ALL LOAN
-    public List<LoanUserBookDTO> getAllLoans() {
+    //GET SOME DATA LOAN
+    public List<LoanUserBookDTO> getAllLoanUserBook() {
         List<Loan> loans = loanRepository.findAll();
         List<LoanUserBookDTO> loanDTOs = new ArrayList<>();
 
@@ -120,7 +120,6 @@ public class LoanService {
                 if (book != null) {
                     loanDTO.setCodeBook(book.getCode());
                     loanDTO.setTitle(book.getTitle());
-                    loanDTO.setAuthor(book.getAuthor());
                 }
             }
 
@@ -128,6 +127,48 @@ public class LoanService {
         }
 
         return loanDTOs;
+    }
+
+    //GET BINNACLE
+    public List<BinnacleDTO> getAllBinnacleData() {
+        List<Loan> loans = loanRepository.findAll();
+        List<BinnacleDTO> binnacleDTOs = new ArrayList<>();
+
+        for (Loan loan : loans) {
+            BinnacleDTO dto = new BinnacleDTO();
+
+            if (loan.getUser() != null) {
+                dto.setUser_name(loan.getUser().getFirst_name());
+                dto.setUser_last_name(loan.getUser().getLast_name());
+                dto.setMail(loan.getUser().getMail());
+                dto.setRole(loan.getUser().getRole());
+            }
+
+            dto.setAcquisition_date(loan.getAcquisition_date());
+            dto.setDate_of_devolution(loan.getDate_of_devolution());
+            dto.setConfirm_devolution(loan.isConfirm_devolution());
+
+            if (loan.getLoanBooks() != null) {
+                for (LoanBook loanBook : loan.getLoanBooks()) {
+                    try {
+                        Book book = bookFeignClient.getBook(loanBook.getBookId()).getBody();
+
+                        if (book != null) {
+                            dto.setCodeBook(book.getCode());
+                            dto.setTitle(book.getTitle());
+                            dto.setAuthor(book.getAuthor());
+                            dto.setLanguage(book.getLanguage());
+                        }
+                    } catch (Exception e) {
+                        System.out.println("Error get book by id: " + loanBook.getBookId());
+                    }
+                }
+            }
+
+            binnacleDTOs.add(dto);
+        }
+
+        return binnacleDTOs;
     }
 
 

@@ -29,7 +29,7 @@ public class UserController {
     private UserService userService;
 
     // LOGIN METHOD
-    @PostMapping("/access")
+    @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> loginRequest) {
         String code = loginRequest.get("code");
         String password = loginRequest.get("password");
