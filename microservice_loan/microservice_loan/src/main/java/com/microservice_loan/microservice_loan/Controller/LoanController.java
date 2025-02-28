@@ -70,7 +70,7 @@ public class LoanController {
 
     // GET BINNACLE
     @GetMapping("/binnacle")
-    public ResponseEntity<List<BinnacleDTO>> getAllBinacleEntries() {
+    public ResponseEntity<List<BinnacleDTO>> getAllBinnacleEntries() {
         List<BinnacleDTO> entries = loanService.getAllBinnacleData();
 
         if (entries.isEmpty()) {
@@ -81,15 +81,16 @@ public class LoanController {
     }
 
     // CONFIRM DEVOLUTION
-    @PutMapping("/confirm-devolution/{loanId}/{bookId}")
-    public ResponseEntity<?> confirmDevolution(@PathVariable Long loanId, @PathVariable Long bookId) {
+    @PutMapping("/returned-book/{loanId}")
+    public ResponseEntity<?> confirmDevolution(@PathVariable Long loanId) {
         try {
-            Loan updatedLoan = loanService.confirmDevolution(loanId, bookId);
+            Loan updatedLoan = loanService.returnedBook(loanId);
             return new ResponseEntity<>(updatedLoan, HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
+
 
     // DISABLE LOAN
     @PutMapping("/disable-loan/{id}")
@@ -105,6 +106,11 @@ public class LoanController {
     @PutMapping("/update/{id}")
     public Loan updateLoan(@RequestBody Loan loanModel,@PathVariable("id") Long id){
         return this.loanService.updateLoan(loanModel, id);
+    }
+
+    @GetMapping
+    public List<Loan> getAllLoansComplete(){
+        return this.loanService.getAllLoans();
     }
 
 }

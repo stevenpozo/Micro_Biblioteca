@@ -186,13 +186,19 @@ public class LoanService {
     }
 
     // CONFIRM DEVOLUTION LOAN
-    public Loan confirmDevolution(Long loanId, Long bookId) {
+    public Loan returnedBook(Long loanId) {
         Loan loan = loanRepository.findById(loanId)
                 .orElseThrow(() -> new RuntimeException("Loan not found"));
 
+        if (loan.getLoanBooks() == null || loan.getLoanBooks().isEmpty()) {
+            throw new RuntimeException("No associated books found for this loan");
+        }
+
+        Long bookId = loan.getLoanBooks().get(0).getBookId();
+
         var bookResponse = bookFeignClient.getBook(bookId);
         if (bookResponse == null || bookResponse.getBody() == null) {
-            throw new RuntimeException("No found this book");
+            throw new RuntimeException("Book not found");
         }
 
         loan.setConfirm_devolution(true);
@@ -202,6 +208,7 @@ public class LoanService {
 
         return loanRepository.save(loan);
     }
+
 
     // DISABLE LOAN
     public void disableLoan(Long loanId) {
@@ -218,5 +225,12 @@ public class LoanService {
         loan.setDate_of_devolution(request.getDate_of_devolution());
         return loanRepository.save(loan);
     }
+
+
+    //GET LOANS
+    public List<Loan> getAllLoans(){
+        return loanRepository.findAll();
+    }
+
 
 }
