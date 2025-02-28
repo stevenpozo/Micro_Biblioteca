@@ -101,4 +101,10 @@ public class LoanController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
+
+    @PutMapping("/update/{id}")
+    public Loan updateLoan(@RequestBody Loan loanModel,@PathVariable("id") Long id){
+        return this.loanService.updateLoan(loanModel, id);
+    }
+
 }

@@ -74,7 +74,7 @@ public class BookController {
     }
 
     // CREATE NEW BOOK
-    @PostMapping("/create")
+    @PostMapping
     public ResponseEntity<?> createBook(@Valid @RequestBody Book book, BindingResult result) {
         if (result.hasErrors()) {
             Map<String, String> errors = Exceptions.getExceptionsErrors(result);

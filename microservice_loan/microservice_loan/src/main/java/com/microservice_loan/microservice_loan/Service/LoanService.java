@@ -212,4 +212,11 @@ public class LoanService {
         loanRepository.save(loan);
     }
 
+    //Update loan
+    public Loan updateLoan(Loan request, Long id){
+        Loan loan = loanRepository.findById(id).get();
+        loan.setDate_of_devolution(request.getDate_of_devolution());
+        return loanRepository.save(loan);
+    }
+
 }

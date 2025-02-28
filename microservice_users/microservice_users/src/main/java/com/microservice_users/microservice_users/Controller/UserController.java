@@ -44,7 +44,7 @@ public class UserController {
 
 
     // GET ALL USERS
-    @GetMapping("/get-all")
+    @GetMapping
     public ResponseEntity<?> getAllUsers() {
             List<User> users = userService.getAllUsers();
             Map<String, Object> response = new HashMap<>();
@@ -115,7 +115,7 @@ public class UserController {
         }
     }
 
-    @PutMapping("/unlock-user/{id}")
+    @PutMapping("/enable-user/{id}")
     public ResponseEntity<?> unlockUserAccount(@PathVariable Integer id) {
         try {
             User user = userService.unlockUserAccount(id);
@@ -142,7 +142,7 @@ public class UserController {
 
     // DISABLE USER
     @PostMapping("/disable-user/{id}")
-    public ResponseEntity<User> deleteUser(@PathVariable Integer id) {
+    public ResponseEntity<User> disableUser(@PathVariable Integer id) {
         try {
             User user = userService.disableUser(id);
             return ResponseEntity.ok(user);
@@ -150,6 +150,7 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
 
     // GET SOME DATA USER
     @GetMapping("/some-data")
