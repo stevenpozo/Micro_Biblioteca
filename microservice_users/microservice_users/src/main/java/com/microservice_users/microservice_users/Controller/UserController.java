@@ -141,7 +141,7 @@ public class UserController {
     }
 
     // DISABLE USER
-    @PostMapping("/disable-user/{id}")
+    @PutMapping("/disable-user/{id}")
     public ResponseEntity<User> disableUser(@PathVariable Integer id) {
         try {
             User user = userService.disableUser(id);
