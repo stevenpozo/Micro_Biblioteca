@@ -151,7 +151,6 @@ public class UserController {
         }
     }
 
-
     // GET SOME DATA USER
     @GetMapping("/some-data")
     public ResponseEntity<List<Map<String, Object>>> getUsersSomeData() {

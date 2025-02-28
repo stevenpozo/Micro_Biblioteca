@@ -61,7 +61,6 @@ public class LoanController {
             if (loans.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
-
             return new ResponseEntity<>(loans, HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);

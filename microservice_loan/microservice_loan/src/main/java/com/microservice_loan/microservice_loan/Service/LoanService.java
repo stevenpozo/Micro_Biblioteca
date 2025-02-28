@@ -33,7 +33,6 @@ public class LoanService {
 
     // CREATE A NEW LOAN
     public Loan createLoan(int userId, Long bookId, Date dateOfDevolution) {
-        // Consultar el microservicio de user para obtener la información del usuario
         ResponseEntity<UserDTO> userResponse = userFeignClient.getUserById((long) userId);
         UserDTO userDTO = userResponse.getBody();
         if (userDTO == null) {
@@ -44,7 +43,6 @@ public class LoanService {
         }
 
         Loan loan = new Loan();
-        // Almacenar sólo el ID del usuario
         loan.setUserId((long) userDTO.getId_user());
         loan.setAcquisition_date(new Date());
         loan.setConfirm_devolution(false);
@@ -85,7 +83,6 @@ public class LoanService {
         LoanUserBookDTO loanUserBookDTO = new LoanUserBookDTO();
         loanUserBookDTO.setId_loan(loan.getId());
 
-        // Obtener datos de usuario desde el microservicio de user
         ResponseEntity<UserDTO> userResponse = userFeignClient.getUserById(loan.getUserId());
         UserDTO userDTO = userResponse.getBody();
         if (userDTO != null) {
@@ -113,10 +110,14 @@ public class LoanService {
         List<LoanUserBookDTO> loanDTOs = new ArrayList<>();
 
         for (Loan loan : loans) {
+            // Procesar solo préstamos con confirm_devolution en false
+            if (loan.isConfirm_devolution()) {
+                continue;
+            }
+
             LoanUserBookDTO loanDTO = new LoanUserBookDTO();
             loanDTO.setId_loan(loan.getId());
 
-            // Obtener datos de usuario
             ResponseEntity<UserDTO> userResponse = userFeignClient.getUserById(loan.getUserId());
             UserDTO userDTO = userResponse.getBody();
             if (userDTO != null) {
@@ -141,6 +142,7 @@ public class LoanService {
         return loanDTOs;
     }
 
+
     // GET BINNACLE
     public List<BinnacleDTO> getAllBinnacleData() {
         List<Loan> loans = loanRepository.findAll();
@@ -149,7 +151,6 @@ public class LoanService {
         for (Loan loan : loans) {
             BinnacleDTO dto = new BinnacleDTO();
 
-            // Obtener información del usuario desde el microservicio de user
             ResponseEntity<UserDTO> userResponse = userFeignClient.getUserById(loan.getUserId());
             UserDTO userDTO = userResponse.getBody();
             if (userDTO != null) {
