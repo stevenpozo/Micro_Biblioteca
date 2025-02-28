@@ -1,11 +1,7 @@
-package com.microservice_users.microservice_users.Entities;
+package com.microservice_loan.microservice_loan.Entities;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -29,15 +25,14 @@ public class Loan {
     @Column(name = "confirm_devolution")
     private boolean confirm_devolution;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id_user", referencedColumnName = "id_user")
-    private User user;
+    // Almacenar solo el ID del usuario, no la entidad completa
+    @Column(name = "user_id")
+    private Long userId;
 
     @OneToMany(mappedBy = "loan", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference // Indicates the owner side of the relationship
     private List<LoanBook> loanBooks = new ArrayList<>();
 
-
+    // Getters y setters
     public int getId() {
         return id;
     }
@@ -70,12 +65,12 @@ public class Loan {
         this.confirm_devolution = confirm_devolution;
     }
 
-    public User getUser() {
-        return user;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public List<LoanBook> getLoanBooks() {

@@ -8,10 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.security.oauth2.client.annotation.RegisteredOAuth2AuthorizedClient;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import jakarta.validation.Valid;
 
 import java.util.HashMap;
@@ -43,31 +40,14 @@ public class UserController {
         }
     }
 
-    @GetMapping("/welcome")
-    public ResponseEntity<Map<String, String>> welcome(
-            @AuthenticationPrincipal OAuth2User oAuth2User,
-            @RegisteredOAuth2AuthorizedClient("github") OAuth2AuthorizedClient authorizedClient) {
-        if (oAuth2User != null) {
-            Map<String, String> response = new HashMap<>();
-            response.put("name", oAuth2User.getAttribute("login"));
-            response.put("message", "Hello " + oAuth2User.getAttribute("login"));
-            response.put("token", authorizedClient.getAccessToken().getTokenValue());
-            return ResponseEntity.ok(response);
-        }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-    }
+
 
 
     // GET ALL USERS
-    @GetMapping("/getall")
-    public ResponseEntity<?> getAllUsers(@AuthenticationPrincipal OAuth2User oAuth2User) {
-        if (oAuth2User != null) {
+    @GetMapping("/get-all")
+    public ResponseEntity<?> getAllUsers() {
             List<User> users = userService.getAllUsers();
             Map<String, Object> response = new HashMap<>();
-            
-            response.put("authenticated", true);
-            response.put("user", oAuth2User.getAttribute("login"));
-            response.put("message", "Access granted to user list");
             
             if (!users.isEmpty()) {
                 response.put("users", users);
@@ -77,12 +57,7 @@ public class UserController {
                 response.put("message", "No users found, but access granted");
                 return ResponseEntity.ok(response);
             }
-        }
-        
-        Map<String, Object> errorResponse = new HashMap<>();
-        errorResponse.put("authenticated", false);
-        errorResponse.put("message", "Authentication required");
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+
     }
 
     // GET USER BY ID
@@ -112,7 +87,7 @@ public class UserController {
 
     // REGISTER A NEW NATURAL USER
     @PostMapping("/register-user")
-    public ResponseEntity<?> registerUserWithoutPassword(@Valid @RequestBody User user, BindingResult result) {
+    public ResponseEntity<?> registerNaturalUser(@Valid @RequestBody User user, BindingResult result) {
         if (result.hasErrors()) {
             Map<String, String> errors = Exceptions.getExceptionsErrors(result);
             return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);

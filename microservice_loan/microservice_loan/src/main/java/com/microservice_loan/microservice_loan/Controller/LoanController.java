@@ -1,10 +1,10 @@
-package com.microservice_users.microservice_users.Controller;
+package com.microservice_loan.microservice_loan.Controller;
 
-import com.microservice_users.microservice_users.Entities.Loan;
-import com.microservice_users.microservice_users.Models.BinnacleDTO;
-import com.microservice_users.microservice_users.Models.LoanRequest;
-import com.microservice_users.microservice_users.Models.LoanUserBookDTO;
-import com.microservice_users.microservice_users.Service.LoanService;
+import com.microservice_loan.microservice_loan.Entities.Loan;
+import com.microservice_loan.microservice_loan.Models.BinnacleDTO;
+import com.microservice_loan.microservice_loan.Models.LoanRequest;
+import com.microservice_loan.microservice_loan.Models.LoanUserBookDTO;
+import com.microservice_loan.microservice_loan.Service.LoanService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,10 +36,9 @@ public class LoanController {
         }
     }
 
-
     // GET LOAN BY ID
     @GetMapping("/{id}")
-    public ResponseEntity<?> getLoanById(@PathVariable int id) {
+    public ResponseEntity<?> getLoanById(@PathVariable Long id) {
         try {
             LoanUserBookDTO loan = loanService.getLoanById(id);
 
@@ -52,7 +51,6 @@ public class LoanController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
-
 
     // GET SOME DATA LOAN
     @GetMapping("/some-data")
@@ -70,7 +68,7 @@ public class LoanController {
         }
     }
 
-    //GET BINNACLE
+    // GET BINNACLE
     @GetMapping("/binnacle")
     public ResponseEntity<List<BinnacleDTO>> getAllBinacleEntries() {
         List<BinnacleDTO> entries = loanService.getAllBinnacleData();
@@ -82,10 +80,9 @@ public class LoanController {
         return ResponseEntity.ok(entries);
     }
 
-
     // CONFIRM DEVOLUTION
-    @PutMapping("confirm-devolution/{loanId}/{bookId}")
-    public ResponseEntity<?> confirmDevolution(@PathVariable int loanId, @PathVariable Long bookId) {
+    @PutMapping("/confirm-devolution/{loanId}/{bookId}")
+    public ResponseEntity<?> confirmDevolution(@PathVariable Long loanId, @PathVariable Long bookId) {
         try {
             Loan updatedLoan = loanService.confirmDevolution(loanId, bookId);
             return new ResponseEntity<>(updatedLoan, HttpStatus.OK);
@@ -94,10 +91,9 @@ public class LoanController {
         }
     }
 
-
     // DISABLE LOAN
     @PutMapping("/disable-loan/{id}")
-    public ResponseEntity<?> disableLoan(@PathVariable int id) {
+    public ResponseEntity<?> disableLoan(@PathVariable Long id) {
         try {
             loanService.disableLoan(id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);

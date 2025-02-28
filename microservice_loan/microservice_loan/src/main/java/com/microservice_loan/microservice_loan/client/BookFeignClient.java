@@ -1,6 +1,6 @@
-package com.microservice_users.microservice_users.Client;
+package com.microservice_loan.microservice_loan.client;
 
-import com.microservice_users.microservice_users.Models.Book;
+import com.microservice_loan.microservice_loan.Models.BookDTO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,19 +15,19 @@ public interface BookFeignClient {
 
     //GET ALL BOOK (MICROSERVICIO BOOK)
     @GetMapping("/{id}")
-    ResponseEntity<Book> getBook(@PathVariable Long id);
+    ResponseEntity<BookDTO> getBook(@PathVariable Long id);
 
     //GET LIST BOOKS
     @GetMapping
-    List<Book> getAllBooks();
+    List<BookDTO> getAllBooks();
 
     //UPDATE STATUS BOOK TO DISABLE
     @PutMapping("/disable/{id}")
-    Book disableBook(@PathVariable("id") Integer id);
+    BookDTO disableBook(@PathVariable("id") Integer id);
 
     //UPDATE STATUS BOOK TO ENABLE
     @PutMapping("/enable/{id}")
-    Book enableBook(@PathVariable("id") Integer id);
+    BookDTO enableBook(@PathVariable("id") Integer id);
 
     //GET SOME DATA AS TITLE, AUTHOR AND CODE BOOK
     @GetMapping("/tac")

@@ -1,4 +1,4 @@
-package com.microservice_users.microservice_users.Config;
+package com.microservice_loan.microservice_loan.Config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,7 +29,7 @@ public class SecurityConfig implements WebMvcConfigurer {
                 .csrf(csrf ->
                         csrf.disable())
                 .authorizeHttpRequests(authRequest ->
-                        authRequest.requestMatchers("/user/**","/user").permitAll()
+                        authRequest.requestMatchers("/book/**","/loan/**").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .build();

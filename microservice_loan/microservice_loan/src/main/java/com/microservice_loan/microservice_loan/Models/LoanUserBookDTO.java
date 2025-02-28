@@ -1,4 +1,4 @@
-package com.microservice_users.microservice_users.Models;
+package com.microservice_loan.microservice_loan.Models;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 

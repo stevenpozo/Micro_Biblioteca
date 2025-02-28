@@ -1,4 +1,5 @@
-package com.microservice_users.microservice_users.Entities;
+package com.microservice_loan.microservice_loan.Entities;
+
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
@@ -54,4 +55,5 @@ public class LoanBook {
         this.enrollmentDate = enrollmentDate;
     }
 }
+
 

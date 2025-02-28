@@ -18,7 +18,7 @@ public class UserService {
     private IUserRepository userRepository;
 
     private static final int MAX_FAILED_ATTEMPTS = 3;
-    private static final int LOCK_TIME_DURATION = 10; // in minutes
+    private static final int LOCK_TIME_DURATION = 2; // in minutes
 
     private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
@@ -136,6 +136,7 @@ public class UserService {
         if (existingUser.isPresent()) {
             throw new RuntimeException("The user with ID number " + user.getCode() + " is already registered in the system");
         }
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRole("USER");
         user.setStatus(true);
 
@@ -152,15 +153,27 @@ public class UserService {
         Optional<User> userOptional = userRepository.findById(id);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
+
+            if (!user.getCode().equals(request.getCode())) {
+                Optional<User> existingUser = userRepository.findByCode(request.getCode());
+                if (existingUser.isPresent()) {
+                    throw new RuntimeException("The code" + request.getCode() + " is already registered in the system");
+                }
+            }
+
             user.setFirst_name(request.getFirst_name());
             user.setLast_name(request.getLast_name());
             user.setMail(request.getMail());
             user.setRole(request.getRole());
             user.setCode(request.getCode());
 
+            if (request.getPassword() != null && !request.getPassword().isEmpty()) {
+                user.setPassword(passwordEncoder.encode(request.getPassword()));
+            }
+
             return userRepository.save(user);
         } else {
-            throw new RuntimeException("User not found in the database");
+            throw new RuntimeException("User not found");
         }
     }
 
@@ -169,15 +182,25 @@ public class UserService {
         Optional<User> userOptional = userRepository.findById(id);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
+
+            if (!"USER".equalsIgnoreCase(user.getRole())) {
+                throw new RuntimeException("Only natural user can edit");
+            }
+
             user.setFirst_name(request.getFirst_name());
             user.setLast_name(request.getLast_name());
             user.setMail(request.getMail());
+
+            if (request.getPassword() != null && !request.getPassword().isEmpty()) {
+                user.setPassword(passwordEncoder.encode(request.getPassword()));
+            }
 
             return userRepository.save(user);
         } else {
             throw new RuntimeException("User not found in the database");
         }
     }
+
 
     // UNLOCK USER ACCOUNT
     public User unlockUserAccount(Integer id) {

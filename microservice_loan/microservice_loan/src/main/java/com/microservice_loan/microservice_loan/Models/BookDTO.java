@@ -1,4 +1,4 @@
-package com.microservice_users.microservice_users.Models;
+package com.microservice_loan.microservice_loan.Models;
 
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -6,7 +6,7 @@ import jakarta.persistence.Id;
 
 import java.math.BigDecimal;
 
-public class Book {
+public class BookDTO {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id_book;
