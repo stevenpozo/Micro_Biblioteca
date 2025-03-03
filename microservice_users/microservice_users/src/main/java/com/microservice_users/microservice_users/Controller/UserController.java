@@ -1,6 +1,7 @@
 package com.microservice_users.microservice_users.Controller;
 
 import com.microservice_users.microservice_users.Entities.User;
+import com.microservice_users.microservice_users.Modals.UserDTO;
 import com.microservice_users.microservice_users.Service.UserService;
 import com.microservice_users.microservice_users.Utils.Exceptions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -159,5 +160,16 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
         return new ResponseEntity<>(usersData, HttpStatus.OK);
+    }
+
+    // GET USER DETAILS BY EMAIL
+    @GetMapping("/details")
+    public ResponseEntity<?> getUserDetails(@RequestParam("code") String code) {
+        try {
+            UserDTO userDTO = userService.getUserDetailsByCode(code);
+            return ResponseEntity.ok(userDTO);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 }

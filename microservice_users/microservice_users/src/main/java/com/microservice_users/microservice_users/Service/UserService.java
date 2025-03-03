@@ -1,6 +1,7 @@
 package com.microservice_users.microservice_users.Service;
 
 import com.microservice_users.microservice_users.Entities.User;
+import com.microservice_users.microservice_users.Modals.UserDTO;
 import com.microservice_users.microservice_users.Repository.IUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -227,6 +228,21 @@ public class UserService {
         } else {
             throw new RuntimeException("User not found in the database");
         }
+    }
+
+    //GET USER DETAILS
+    public UserDTO getUserDetailsByCode(String code) {
+        Optional<User> userOptional = userRepository.findByCode(code);
+        if (!userOptional.isPresent()) {
+            throw new RuntimeException("Usuario no encontrado con code: " + code);
+        }
+        User user = userOptional.get();
+        UserDTO dto = new UserDTO();
+        // Aquí puedes decidir qué campos devolver; en este ejemplo, se mantienen los mismos:
+        dto.setCode(user.getCode());
+        dto.setPassword(user.getPassword()); // La contraseña encriptada
+        dto.setRole(user.getRole());
+        return dto;
     }
 
 }
