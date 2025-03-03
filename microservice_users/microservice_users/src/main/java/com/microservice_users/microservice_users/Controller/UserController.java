@@ -44,7 +44,7 @@ public class UserController {
 
 
 
-    // GET ALL USERS
+    // GET ALL USERS (ADMIN)
     @GetMapping
     public ResponseEntity<?> getAllUsers() {
             List<User> users = userService.getAllUsers();
@@ -71,7 +71,7 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    // CREATE A NEW ADMINISTRATOR USER
+    // CREATE A NEW ADMINISTRATOR USER (ADMIN)
     @PostMapping("/create-user")
     public ResponseEntity<?> createUser(@Valid @RequestBody User user, BindingResult result) {
         if (result.hasErrors()) {
@@ -101,7 +101,7 @@ public class UserController {
         }
     }
 
-    // UPDATE USER BY ADMIN
+    // UPDATE USER BY ADMIN (ADMIN)
     @PutMapping("/update-admin/{id}")
     public ResponseEntity<?> updateUser(@PathVariable Integer id, @Valid @RequestBody User updatedUser, BindingResult result) {
         if (result.hasErrors()) {
@@ -116,6 +116,7 @@ public class UserController {
         }
     }
 
+   //ENABLE A USER (ADMIN)
     @PutMapping("/enable-user/{id}")
     public ResponseEntity<?> unlockUserAccount(@PathVariable Integer id) {
         try {
@@ -126,7 +127,7 @@ public class UserController {
         }
     }
 
-    // UPDATE USER BY USER
+    // UPDATE USER BY USER (USER AND ADMIN)
     @PutMapping("/update-user/{id}")
     public ResponseEntity<?> updateUserByUser(@PathVariable Integer id, @Valid @RequestBody User updatedUser, BindingResult result) {
         if (result.hasErrors()) {
@@ -141,7 +142,7 @@ public class UserController {
         }
     }
 
-    // DISABLE USER
+    // DISABLE USER (ADMIN)
     @PutMapping("/disable-user/{id}")
     public ResponseEntity<User> disableUser(@PathVariable Integer id) {
         try {
@@ -152,7 +153,7 @@ public class UserController {
         }
     }
 
-    // GET SOME DATA USER
+    // GET SOME DATA USER (ADMIN)
     @GetMapping("/some-data")
     public ResponseEntity<List<Map<String, Object>>> getUsersSomeData() {
         List<Map<String, Object>> usersData = userService.getUsersSomeData();
@@ -162,7 +163,7 @@ public class UserController {
         return new ResponseEntity<>(usersData, HttpStatus.OK);
     }
 
-    // GET USER DETAILS BY EMAIL
+    // GET USER DETAILS BY EMAIL (ADMIN)
     @GetMapping("/details")
     public ResponseEntity<?> getUserDetails(@RequestParam("code") String code) {
         try {

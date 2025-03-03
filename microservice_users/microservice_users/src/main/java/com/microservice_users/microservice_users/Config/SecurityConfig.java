@@ -38,14 +38,22 @@ public class SecurityConfig implements WebMvcConfigurer {
                             // 1. ADMIN puede hacer cualquier método (GET, POST, PUT, DELETE)
                             // 2. USER solo puede hacer GET y PUT, por ejemplo
 
+                            //ROUTES PERMIT ALL
                             .requestMatchers("/user/details").permitAll()
-                            // => GET y PUT en /user/** para USER o ADMIN
-                            .requestMatchers(HttpMethod.GET, "/user/**").hasAnyRole("USER", "ADMIN")
-                            .requestMatchers(HttpMethod.PUT, "/user/**").hasAnyRole("USER", "ADMIN")
+                            .requestMatchers(HttpMethod.POST, "/user/register-user").permitAll()
+                            .requestMatchers(HttpMethod.POST, "/user/login").permitAll()
+                            .requestMatchers(HttpMethod.GET, "/user/{id}").permitAll()
 
-                            // => POST y DELETE en /user/** solo para ADMIN
-                            .requestMatchers(HttpMethod.POST, "/user/**").hasRole("ADMIN")
-                            .requestMatchers(HttpMethod.DELETE, "/user/**").hasRole("ADMIN")
+                            //ROUTES PERMIT ONLY USER AND ADMIN
+                            .requestMatchers(HttpMethod.GET, "/user/**").hasAnyRole("USER", "ADMIN")
+                            .requestMatchers(HttpMethod.PUT, "/user/update-user/{id}").hasAnyRole("USER", "ADMIN")
+
+                            //ROUTES PERMIT ONLY ADMIN
+                            .requestMatchers(HttpMethod.POST, "/user/create-user").hasRole("ADMIN")
+                            .requestMatchers(HttpMethod.PUT, "/user/update-admin/{id}").hasRole("ADMIN")
+                            .requestMatchers(HttpMethod.PUT, "/user/enable-user/{id}").hasRole("ADMIN")
+                            .requestMatchers(HttpMethod.PUT, "/user/disable-user/{id}").hasRole("ADMIN")
+
 
                             .anyRequest().authenticated()
                     )
@@ -71,6 +79,4 @@ public class SecurityConfig implements WebMvcConfigurer {
             return converter;
         }
     }
-
-
 }
