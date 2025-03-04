@@ -5,6 +5,7 @@ import java.security.KeyPairGenerator;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.time.Duration;
+import java.util.List;
 import java.util.UUID;
 
 import com.irojas.oauth.oauthserver.Service.RemoteUserDetailsService;
@@ -42,6 +43,9 @@ import org.springframework.security.oauth2.server.authorization.settings.TokenSe
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -50,7 +54,6 @@ public class SecurityConfig {
 	@Autowired
 	private RemoteUserDetailsService remoteUserDetailsService;
 
-	// Bean para encriptar contraseñas
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
@@ -77,6 +80,7 @@ public class SecurityConfig {
 				.oidc(Customizer.withDefaults());
 
 		http
+				.cors(Customizer.withDefaults()) // <--- Habilita CORS
 				.exceptionHandling(exceptions ->
 						exceptions.defaultAuthenticationEntryPointFor(
 								new LoginUrlAuthenticationEntryPoint("/login"),
@@ -99,10 +103,11 @@ public class SecurityConfig {
 						.anyRequest().authenticated()
 				)
 				.csrf(csrf -> csrf.disable())
+				.cors(Customizer.withDefaults()) // <--- Habilita CORS
 				.formLogin(Customizer.withDefaults())
 				.logout(logout -> logout
-						.logoutUrl("/logout")                      // La URL que disparará el logout
-						.logoutSuccessUrl("/login?logout")         // A dónde redirigir después del logout
+						.logoutUrl("/logout")
+						.logoutSuccessUrl("/login?logout")
 						.invalidateHttpSession(true)
 						.deleteCookies("JSESSIONID")
 				)
@@ -111,7 +116,19 @@ public class SecurityConfig {
 		return http.build();
 	}
 
-	// Fuente de claves para la generación del JWKSet
+	// 🔥 Configuración de CORS Global para permitir solicitudes desde frontend
+	@Bean
+	public CorsFilter corsFilter() {
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		CorsConfiguration config = new CorsConfiguration();
+		config.setAllowedOrigins(List.of("http://localhost:5173")); // Permitir frontend
+		config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+		config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+		config.setAllowCredentials(true); // Permitir credenciales (cookies, auth headers)
+		source.registerCorsConfiguration("/**", config);
+		return new CorsFilter(source);
+	}
+
 	@Bean
 	public JWKSource<SecurityContext> jwkSource() {
 		KeyPair keyPair = generateRsaKey();
@@ -125,7 +142,6 @@ public class SecurityConfig {
 		return new ImmutableJWKSet<>(jwkSet);
 	}
 
-	// Generador de claves RSA
 	private static KeyPair generateRsaKey() {
 		try {
 			KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
@@ -136,37 +152,19 @@ public class SecurityConfig {
 		}
 	}
 
-	// Decoder para JWT
 	@Bean
 	public JwtDecoder jwtDecoder(JWKSource<SecurityContext> jwkSource) {
 		return OAuth2AuthorizationServerConfiguration.jwtDecoder(jwkSource);
 	}
 
-	// Registro de clientes en memoria
 	@Bean
 	public RegisteredClientRepository registeredClientRepository() {
-		RegisteredClient oidcClient = RegisteredClient.withId(UUID.randomUUID().toString())
-				.clientId("oidc-client")
-				.clientSecret("{noop}123456789")
-				.clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
-				.authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-				.authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
-				.redirectUri("https://oauthdebugger.com/debug")
-				.scope(OidcScopes.OPENID)
-				.scope(OidcScopes.PROFILE)
-				.scope("read")
-				.scope("write")
-				.build();
-
 		RegisteredClient oauthClient = RegisteredClient.withId(UUID.randomUUID().toString())
 				.clientId("oauth-client")
 				.clientSecret(passwordEncoder().encode("12345678910"))
 				.clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
 				.authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
 				.authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
-
-				//.redirectUri("http://127.0.0.1:8080/login/oauth2/code/oauth-client")
-				//.redirectUri("http://127.0.0.1:8080/authorized")
 				.redirectUri("http://localhost:5173/")
 				.postLogoutRedirectUri("http://127.0.0.1:8080/logout")
 				.scope(OidcScopes.OPENID)
@@ -174,20 +172,18 @@ public class SecurityConfig {
 				.scope("read")
 				.scope("write")
 				.tokenSettings(TokenSettings.builder()
-						.accessTokenTimeToLive(Duration.ofMinutes(1))  // Token válido 5 minutos
+						.accessTokenTimeToLive(Duration.ofMinutes(1))
 						.build())
 				.build();
 
-		return new InMemoryRegisteredClientRepository(oidcClient, oauthClient);
+		return new InMemoryRegisteredClientRepository(oauthClient);
 	}
 
-	// Configuración de parámetros del servidor de autorización
 	@Bean
 	public AuthorizationServerSettings authorizationServerSettings() {
 		return AuthorizationServerSettings.builder().build();
 	}
 
-	// Uso del RemoteUserDetailsService para el UserDetailsService
 	@Bean
 	public UserDetailsService userDetailsService(RemoteUserDetailsService remoteUserDetailsService) {
 		return remoteUserDetailsService;
