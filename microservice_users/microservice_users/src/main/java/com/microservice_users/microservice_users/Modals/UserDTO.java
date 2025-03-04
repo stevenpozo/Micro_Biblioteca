@@ -1,6 +1,7 @@
 package com.microservice_users.microservice_users.Modals;
 
 public class UserDTO {
+    private int id;
     private String code;
     private String password;
     private String role;
@@ -26,5 +27,13 @@ public class UserDTO {
     }
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

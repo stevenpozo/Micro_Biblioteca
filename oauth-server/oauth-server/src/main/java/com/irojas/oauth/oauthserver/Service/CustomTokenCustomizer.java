@@ -16,7 +16,9 @@ public class CustomTokenCustomizer implements OAuth2TokenCustomizer<JwtEncodingC
 
             if (principal != null && principal.getPrincipal() instanceof User) {
                 User userPrincipal = (User) principal.getPrincipal();
-
+                CustomUserDetails userDetails = (CustomUserDetails) principal.getPrincipal();
+                // Agregar el ID del usuario al token
+                context.getClaims().claim("user_id", userDetails.getId());
                 // Suponiendo que solo hay un rol, lo extraemos
                 String authority = userPrincipal.getAuthorities().iterator().next().getAuthority();
                 // authority = "ROLE_ADMIN" o "ROLE_USER"

@@ -239,6 +239,7 @@ public class UserService {
         User user = userOptional.get();
         UserDTO dto = new UserDTO();
         // Aquí puedes decidir qué campos devolver; en este ejemplo, se mantienen los mismos:
+        dto.setId(user.getId_user());
         dto.setCode(user.getCode());
         dto.setPassword(user.getPassword()); // La contraseña encriptada
         dto.setRole(user.getRole());

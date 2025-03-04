@@ -15,8 +15,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class LoanService {
@@ -102,6 +104,45 @@ public class LoanService {
         }
 
         return loanUserBookDTO;
+    }
+
+    // GET LOANS BY USER ID
+    public List<LoanUserBookDTO> getLoansByUserId(Long userId) {
+        List<Loan> loans = loanRepository.findAll()
+                .stream()
+                .filter(loan -> loan.getUserId().equals(userId))
+                .sorted(Comparator.comparing(Loan::isConfirm_devolution)) // false primero, true después
+                .collect(Collectors.toList());
+
+        List<LoanUserBookDTO> loanDTOs = new ArrayList<>();
+
+        for (Loan loan : loans) {
+            LoanUserBookDTO loanDTO = new LoanUserBookDTO();
+            loanDTO.setId_loan(loan.getId());
+
+            ResponseEntity<UserDTO> userResponse = userFeignClient.getUserById(loan.getUserId());
+            UserDTO userDTO = userResponse.getBody();
+            if (userDTO != null) {
+                loanDTO.setCodeUser(userDTO.getCode());
+                loanDTO.setUser_name(userDTO.getFirst_name());
+                loanDTO.setUser_last_name(userDTO.getLast_name());
+            }
+            loanDTO.setAcquisition_date(loan.getAcquisition_date());
+            loanDTO.setDate_of_devolution(loan.getDate_of_devolution());
+            loanDTO.setConfirm_devolution(loan.isConfirm_devolution());
+
+
+            for (LoanBook loanBook : loan.getLoanBooks()) {
+                BookDTO book = bookFeignClient.getBook(loanBook.getBookId()).getBody();
+                if (book != null) {
+                    loanDTO.setCodeBook(book.getCode());
+                    loanDTO.setTitle(book.getTitle());
+                }
+            }
+
+            loanDTOs.add(loanDTO);
+        }
+        return loanDTOs;
     }
 
     // GET SOME DATA LOAN

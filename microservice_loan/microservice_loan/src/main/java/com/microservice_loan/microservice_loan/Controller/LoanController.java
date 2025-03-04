@@ -52,6 +52,19 @@ public class LoanController {
         }
     }
 
+    @GetMapping("/some-data/{id_user}")
+    public ResponseEntity<List<LoanUserBookDTO>> getLoansByUserId(@PathVariable("id_user") Long userId) {
+        try {
+            List<LoanUserBookDTO> loans = loanService.getLoansByUserId(userId);
+            if (loans.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+            return new ResponseEntity<>(loans, HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     // GET SOME DATA LOAN
     @GetMapping("/some-data")
     public ResponseEntity<List<LoanUserBookDTO>> getAllLoans() {

@@ -12,6 +12,7 @@ public class LoanUserBookDTO {
     private String user_last_name;
     private String codeBook;
     private String title;
+    private boolean confirm_devolution;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date acquisition_date;
@@ -82,4 +83,13 @@ public class LoanUserBookDTO {
     public void setDate_of_devolution(Date date_of_devolution) {
         this.date_of_devolution = date_of_devolution;
     }
+
+    public boolean isConfirm_devolution() {
+        return confirm_devolution;
+    }
+
+    public void setConfirm_devolution(boolean confirm_devolution) {
+        this.confirm_devolution = confirm_devolution;
+    }
+
 }

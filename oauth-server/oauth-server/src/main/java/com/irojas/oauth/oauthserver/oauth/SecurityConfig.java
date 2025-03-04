@@ -172,7 +172,7 @@ public class SecurityConfig {
 				.scope("read")
 				.scope("write")
 				.tokenSettings(TokenSettings.builder()
-						.accessTokenTimeToLive(Duration.ofMinutes(1))
+						.accessTokenTimeToLive(Duration.ofMinutes(20))
 						.build())
 				.build();
 

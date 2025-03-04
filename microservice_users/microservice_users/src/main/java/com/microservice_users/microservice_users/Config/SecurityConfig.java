@@ -10,6 +10,10 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtGra
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.filter.CorsFilter;
+import java.util.List;
 
 
 @Configuration
@@ -31,7 +35,14 @@ public class SecurityConfig implements WebMvcConfigurer {
 
         @Bean
         public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-            http
+            http.cors(cors -> cors.configurationSource(request -> {
+                CorsConfiguration config = new CorsConfiguration();
+                config.setAllowedOrigins(List.of("http://localhost:5173"));
+                config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+                config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+                config.setAllowCredentials(true);
+                return config;
+            }))
                     .authorizeHttpRequests(auth -> auth
                             // Ejemplo: supongamos que /user/** es la API principal
                             // Reglas:

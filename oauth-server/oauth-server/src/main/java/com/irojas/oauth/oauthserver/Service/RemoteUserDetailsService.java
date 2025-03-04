@@ -4,7 +4,6 @@ import com.irojas.oauth.oauthserver.Client.UserClient;
 import com.irojas.oauth.oauthserver.Modals.UserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -26,9 +25,13 @@ public class RemoteUserDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException("Usuario no encontrado con el mail: " + code);
         }
 
-        // Mapear el rol recibido (por ejemplo, "ADMIN" o "USER") a una GrantedAuthority
         SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + userDTO.getRole());
 
-        return new User(userDTO.getCode(), userDTO.getPassword(), Collections.singletonList(authority));
+        return new CustomUserDetails(
+            userDTO.getId(),
+            userDTO.getCode(),
+            userDTO.getPassword(),
+            Collections.singletonList(authority)
+        );
     }
 }
