@@ -2,6 +2,8 @@ package com.microservice_users.microservice_users.Controller;
 
 import com.microservice_users.microservice_users.Entities.User;
 import com.microservice_users.microservice_users.Modals.UserDTO;
+import com.microservice_users.microservice_users.Modals.UserEditDTO;
+import com.microservice_users.microservice_users.Modals.UserUpdateByUserDTO;
 import com.microservice_users.microservice_users.Service.UserService;
 import com.microservice_users.microservice_users.Utils.Exceptions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -101,22 +103,27 @@ public class UserController {
         }
     }
 
-    // UPDATE USER BY ADMIN (ADMIN)
+//UPDATE USER BY ADMIN
     @PutMapping("/update-admin/{id}")
-    public ResponseEntity<?> updateUser(@PathVariable Integer id, @Valid @RequestBody User updatedUser, BindingResult result) {
+    public ResponseEntity<?> updateUser(
+            @PathVariable Integer id,
+            @Valid @RequestBody UserEditDTO updatedUserDto,
+            BindingResult result
+    ) {
         if (result.hasErrors()) {
             Map<String, String> errors = Exceptions.getExceptionsErrors(result);
             return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
         }
         try {
-            User user = userService.updateUserByAdmin(updatedUser, id);
+            User user = userService.updateUserByAdmin(updatedUserDto, id);
             return new ResponseEntity<>(user, HttpStatus.OK);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
 
-   //ENABLE A USER (ADMIN)
+
+    //ENABLE A USER (ADMIN)
     @PutMapping("/enable-user/{id}")
     public ResponseEntity<?> unlockUserAccount(@PathVariable Integer id) {
         try {
@@ -127,20 +134,25 @@ public class UserController {
         }
     }
 
-    // UPDATE USER BY USER (USER AND ADMIN)
+    // UPDATE USER BY USER
     @PutMapping("/update-user/{id}")
-    public ResponseEntity<?> updateUserByUser(@PathVariable Integer id, @Valid @RequestBody User updatedUser, BindingResult result) {
+    public ResponseEntity<?> updateUserByUser(
+            @PathVariable Integer id,
+            @Valid @RequestBody UserUpdateByUserDTO updatedUserDto,
+            BindingResult result
+    ) {
         if (result.hasErrors()) {
             Map<String, String> errors = Exceptions.getExceptionsErrors(result);
             return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
         }
         try {
-            User user = userService.updateUserByUser(updatedUser, id);
+            User user = userService.updateUserByUser(updatedUserDto, id);
             return new ResponseEntity<>(user, HttpStatus.OK);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
+
 
     // DISABLE USER (ADMIN)
     @PutMapping("/disable-user/{id}")

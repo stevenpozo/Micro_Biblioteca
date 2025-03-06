@@ -2,6 +2,8 @@ package com.microservice_users.microservice_users.Service;
 
 import com.microservice_users.microservice_users.Entities.User;
 import com.microservice_users.microservice_users.Modals.UserDTO;
+import com.microservice_users.microservice_users.Modals.UserEditDTO;
+import com.microservice_users.microservice_users.Modals.UserUpdateByUserDTO;
 import com.microservice_users.microservice_users.Repository.IUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -149,37 +151,41 @@ public class UserService {
         return userRepository.findById(id);
     }
 
-    // UPDATE USER BY ADMIN
-    public User updateUserByAdmin(User request, Integer id) {
+    // UserService.java (o el servicio correspondiente)
+
+    public User updateUserByAdmin(UserEditDTO request, Integer id) {
         Optional<User> userOptional = userRepository.findById(id);
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-
-            if (!user.getCode().equals(request.getCode())) {
-                Optional<User> existingUser = userRepository.findByCode(request.getCode());
-                if (existingUser.isPresent()) {
-                    throw new RuntimeException("The code" + request.getCode() + " is already registered in the system");
-                }
-            }
-
-            user.setFirst_name(request.getFirst_name());
-            user.setLast_name(request.getLast_name());
-            user.setMail(request.getMail());
-            user.setRole(request.getRole());
-            user.setCode(request.getCode());
-
-            if (request.getPassword() != null && !request.getPassword().isEmpty()) {
-                user.setPassword(passwordEncoder.encode(request.getPassword()));
-            }
-
-            return userRepository.save(user);
-        } else {
+        if (userOptional.isEmpty()) {
             throw new RuntimeException("User not found");
         }
+
+        User user = userOptional.get();
+
+        // Validar si se cambia el "code"
+        if (!user.getCode().equals(request.getCode())) {
+            Optional<User> existingUser = userRepository.findByCode(request.getCode());
+            if (existingUser.isPresent()) {
+                throw new RuntimeException("The code " + request.getCode() + " is already registered in the system");
+            }
+        }
+
+        user.setFirst_name(request.getFirst_name());
+        user.setLast_name(request.getLast_name());
+        user.setMail(request.getMail());
+        user.setRole(request.getRole());
+        user.setCode(request.getCode());
+
+        // Si la contraseña NO es nula/vacía, se actualiza; de lo contrario, se conserva la anterior
+        if (request.getPassword() != null && !request.getPassword().trim().isEmpty()) {
+            user.setPassword(request.getPassword());
+        }
+
+        return userRepository.save(user);
     }
 
+
     // UPDATE USER BY USER
-    public User updateUserByUser(User request, Integer id) {
+    public User updateUserByUser(UserUpdateByUserDTO request, Integer id) {
         Optional<User> userOptional = userRepository.findById(id);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
@@ -192,15 +198,14 @@ public class UserService {
             user.setLast_name(request.getLast_name());
             user.setMail(request.getMail());
 
-            if (request.getPassword() != null && !request.getPassword().isEmpty()) {
-                user.setPassword(passwordEncoder.encode(request.getPassword()));
-            }
+            // Aquí ya no actualizamos la contraseña, se mantiene la existente
 
             return userRepository.save(user);
         } else {
             throw new RuntimeException("User not found in the database");
         }
     }
+
 
 
     // UNLOCK USER ACCOUNT
